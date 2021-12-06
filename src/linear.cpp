@@ -27,13 +27,11 @@ double LinearRegression::fit(std::vector<double> &x, std::vector<double> &y) {
     }
     slope = delta_y / delta_x;
     bias = y_mean - slope * x_mean;
-    // compute mean squared error and residual squares
+    // compute mean squared error
     double mse = 0.00;
-    std::vector<double> residual;
     for(unsigned int i = 0; i < x.size(); i++) {
         double yhat = slope * x[i] + bias;
         double residual_squared = pow(y[i] - yhat, 2);
-        residual.push_back(residual_squared);
         mse += residual_squared;
     }
     mse /= x.size();
@@ -53,7 +51,6 @@ double LinearRegression::fit(std::vector<double> &x, std::vector<double> &y) {
     double y_stdev = sqrt(y_var / y.size());
     // pearson correlation coefficient
     r = cov / (x_stdev * y_stdev);
-
     return r;
 }
 

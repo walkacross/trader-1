@@ -7,4 +7,6 @@
 
 std::vector<std::string> read_ticker_list(std::string path);
 
+bool data_exists(std::string ticker);
+
 #endif
