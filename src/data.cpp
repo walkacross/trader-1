@@ -26,9 +26,12 @@ bool data_exists(std::string ticker) {
     return f.is_open();
 }
 
-void download(std::string ticker) {
-    std::string cmd = "./python/download.py " + ticker;
-    std::system(cmd.c_str());
+bool download(std::string ticker) {
+    if(!data_exists(ticker)) {
+        std::string cmd = "./python/download.py " + ticker;
+        std::system(cmd.c_str());
+    }
+    return data_exists(ticker);
 }
 
 std::vector<std::vector<double>> read_pair(std::string path) {
@@ -55,3 +58,19 @@ std::vector<std::vector<double>> read_pair(std::string path) {
     return pair_data;
 }
 
+void sort_correlating_pairs(std::vector<std::string> &tickers, std::vector<double> &correlation) {
+    for(unsigned int i = 0; i < tickers.size() - 1; i++) {
+        std::string max_ticker = "";
+        double max_correlation = 0.00;
+        for(unsigned int j = i + 1; j < tickers.size(); j++) {
+            if(correlation[j] > max_correlation) {
+                max_ticker = tickers[j];
+                max_correlation = correlation[j];
+            }
+        }
+        std::string temp_ticker = tickers[i];
+        double temp_correlation = correlation[i];
+        tickers[i] = max_ticker;
+        correlation[i] = max_correlation;
+    }
+}

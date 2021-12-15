@@ -30,5 +30,5 @@ if len(pair_data) >= len(y["adjusted close"]) * 0.70:
         if i != len(pair_data) - 1:
             out.write("\n")
 else:
-    out.writeline("999 999 ")
+    out.write("999 999 ")
 
