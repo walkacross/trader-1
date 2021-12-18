@@ -1,6 +1,6 @@
 
 COMPILER=g++
-VERSION=-std=c++20
+VERSION=-std=c++2a
 
 output: main.o train.o data.o linear.o dnn.o
 	$(COMPILER) $(VERSION) main.o train.o data.o linear.o dnn.o -o trader

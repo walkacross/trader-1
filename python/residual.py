@@ -14,10 +14,13 @@ for i in range(len(x_tickers)):
 df = pd.read_csv("./data/{}.csv" .format(y_ticker))
 y_df = {"dates": list(df["dates"]), "adjusted close": list(df["adjusted close"])}
 
-residuals = [[] for i in range(len(x_tickers))]
 for i in range(len(y_df["dates"])):
+    common = True
     for k in range(len(x_dfs)):
         common = y_df["dates"][i] in x_dfs[k]["dates"]
         if not common:
             break
-     
+
+    if common:
+        
+

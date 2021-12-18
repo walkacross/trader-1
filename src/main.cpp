@@ -50,11 +50,19 @@ int main(int argc, char *args[])
 
                 std::cout << "\n\nPairs correlated with " << tickers[i] << std::endl;
                 for(unsigned int j = 0; j < correlating_tickers.size(); j++) {
-                    std::cout << tickers[i] << "-" << correlating_tickers[j] << ": " << correlation[j] << std::endl;
+                    if(j < 10) std::cout << "**";
+                    else std::cout << "  ";
+                    std::cout << tickers[i] << "-" << correlating_tickers[j] << ": " << correlation[j] << "\n";
                 }
                 std::cout << "\n";
 
-                // sample residual
+                // sample residual (top 10 correlating pairs)
+                std::string cmd = "./python/residual.py ";
+                for(unsigned int j = 0; j < 10; j++) {
+                    cmd += correlating_tickers[j] + " ";
+                }
+                cmd += tickers[i];
+                std::system(cmd.c_str());
 
                 // encode residual data
 
