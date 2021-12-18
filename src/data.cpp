@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <chrono>
+#include <thread>
 
 #include "../lib/data.hpp"
 
@@ -30,6 +32,7 @@ bool download(std::string ticker) {
     if(!data_exists(ticker)) {
         std::string cmd = "./python/download.py " + ticker;
         std::system(cmd.c_str());
+        std::this_thread::sleep_for(std::chrono::seconds(10));
     }
     return data_exists(ticker);
 }

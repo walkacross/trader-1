@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
-#include <chrono>
-#include <thread>
 
 #include "../lib/bar.hpp"
 #include "../lib/data.hpp"
@@ -14,7 +12,7 @@ int main(int argc, char *args[])
 {
     std::vector<std::string> tickers = read_ticker_list("./data/tickers.csv");
 
-    for(unsigned int i = 0; i < tickers.size(); i++) { // tickers.size()
+    for(unsigned int i = 0; i < 1; i++) { // tickers.size()
         if(download(tickers[i])) {
             std::vector<double> correlation;
             std::vector<std::string> correlating_tickers;
@@ -38,12 +36,11 @@ int main(int argc, char *args[])
                         }
                         LinearRegression linear;
                         double r = linear.fit(x, y);
-                        if(r > 0.60) {
+                        if(r > 0.50) {
                             correlating_tickers.push_back(tickers[j]);
                             correlation.push_back(r);
                         }
                     }
-//                  std::this_thread::sleep_for(std::chrono::seconds(10));
                 }
             }
 
@@ -52,10 +49,10 @@ int main(int argc, char *args[])
                 sort_correlating_pairs(correlating_tickers, correlation);
 
                 std::cout << "\n\nPairs correlated with " << tickers[i] << std::endl;
-                for(unsigned int i = 0; i < correlating_tickers.size(); i++) {
-                    std::cout << tickers[i] << "-" << correlating_tickers[i] << ": " << correlation[i] << std::endl;
+                for(unsigned int j = 0; j < correlating_tickers.size(); i++) {
+                    std::cout << tickers[i] << "-" << correlating_tickers[j] << ": " << correlation[j] << std::endl;
                 }
-                std::cout << "\n\n";
+                std::cout << "\n";
 
                 // sample residual
 
@@ -64,8 +61,9 @@ int main(int argc, char *args[])
                 // train neural network (reinforcement)
             }
             else {
-                std::cout << "Not enough correlating pairs found.\nModel rejected.\n";
+                std::cout << "Not enough correlating pairs found. Model rejected.\n";
             }
+
         }
     }
 
