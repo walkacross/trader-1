@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
+#include <chrono>
+#include <thread>
 
 #include "../lib/bar.hpp"
 #include "../lib/data.hpp"
@@ -12,10 +14,13 @@ int main(int argc, char *args[])
 {
     std::vector<std::string> tickers = read_ticker_list("./data/tickers.csv");
 
-    for(unsigned int i = 0; i < 1; i++) { // tickers.size()
+    for(unsigned int i = 0; i < tickers.size(); i++) { // tickers.size()
         if(download(tickers[i])) {
             std::vector<double> correlation;
             std::vector<std::string> correlating_tickers;
+
+            std::cout << "\n=========================" << tickers[i] << "=========================\n\n";
+
             for(unsigned int j = 0; j < tickers.size(); j++) {
                 std::string bar_label = "Computing pair correlation [" + tickers[i] + "-" + tickers[j] + "]";
                 progress_bar(j, tickers.size(), bar_label);
@@ -33,24 +38,34 @@ int main(int argc, char *args[])
                         }
                         LinearRegression linear;
                         double r = linear.fit(x, y);
-                        if(r > 0.50) {
+                        if(r > 0.60) {
                             correlating_tickers.push_back(tickers[j]);
                             correlation.push_back(r);
                         }
                     }
+//                  std::this_thread::sleep_for(std::chrono::seconds(10));
                 }
             }
 
-            sort_correlating_pairs(correlating_tickers, correlation);
+            if(correlating_tickers.size() >= 10) {
+                // sort correlating pairs (max ... min)
+                sort_correlating_pairs(correlating_tickers, correlation);
 
-            // sample residual data (macroindices and top 5 correlating pair)
-            for(unsigned int i = 0; i < correlating_tickers.size(); i++) {
-                std::cout << correlating_tickers[i] << " " << correlation[i] << std::endl;
+                std::cout << "\n\nPairs correlated with " << tickers[i] << std::endl;
+                for(unsigned int i = 0; i < correlating_tickers.size(); i++) {
+                    std::cout << tickers[i] << "-" << correlating_tickers[i] << ": " << correlation[i] << std::endl;
+                }
+                std::cout << "\n\n";
+
+                // sample residual
+
+                // encode residual data
+
+                // train neural network (reinforcement)
             }
-
-            // encode residual data
-
-            // train neural network (reinforcement)
+            else {
+                std::cout << "Not enough correlating pairs found.\nModel rejected.\n";
+            }
         }
     }
 

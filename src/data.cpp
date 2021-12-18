@@ -59,18 +59,25 @@ std::vector<std::vector<double>> read_pair(std::string path) {
 }
 
 void sort_correlating_pairs(std::vector<std::string> &tickers, std::vector<double> &correlation) {
+    // selection sort (max ... min)
     for(unsigned int i = 0; i < tickers.size() - 1; i++) {
         std::string max_ticker = "";
         double max_correlation = 0.00;
+        int k = 0;
         for(unsigned int j = i + 1; j < tickers.size(); j++) {
             if(correlation[j] > max_correlation) {
                 max_ticker = tickers[j];
                 max_correlation = correlation[j];
+                k = j;
             }
         }
+
         std::string temp_ticker = tickers[i];
         double temp_correlation = correlation[i];
         tickers[i] = max_ticker;
+        tickers[k] = temp_ticker;
         correlation[i] = max_correlation;
+        correlation[k] = temp_correlation;
     }
 }
+
