@@ -67,7 +67,7 @@ void sort_correlating_pairs(std::vector<std::string> &tickers, std::vector<doubl
         std::string max_ticker = "";
         double max_correlation = 0.00;
         int k = 0;
-        for(unsigned int j = i + 1; j < tickers.size(); j++) {
+        for(unsigned int j = i; j < tickers.size(); j++) {
             if(correlation[j] > max_correlation) {
                 max_ticker = tickers[j];
                 max_correlation = correlation[j];

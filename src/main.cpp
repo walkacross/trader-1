@@ -44,12 +44,12 @@ int main(int argc, char *args[])
                 }
             }
 
-            if(correlating_tickers.size() >= 10) {
+            if(correlating_tickers.size() > 10) {
                 // sort correlating pairs (max ... min)
                 sort_correlating_pairs(correlating_tickers, correlation);
 
                 std::cout << "\n\nPairs correlated with " << tickers[i] << std::endl;
-                for(unsigned int j = 0; j < correlating_tickers.size(); i++) {
+                for(unsigned int j = 0; j < correlating_tickers.size(); j++) {
                     std::cout << tickers[i] << "-" << correlating_tickers[j] << ": " << correlation[j] << std::endl;
                 }
                 std::cout << "\n";
