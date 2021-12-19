@@ -32,7 +32,7 @@ def main():
                 break
 
         if common:
-            out = open("./temp/residual", "w")
+            out = open("./temp/residual", "a")
             for j in range(len(x_dfs)):
                 k = list(x_dfs[j]["dates"]).index(y_df["dates"][i])
                # normalize (past 25 days: 0 ... 24)
@@ -50,7 +50,7 @@ def main():
             out.write(str(y_return) + "\n/\n")
 
     # save list
-    with open("./models{}/linear/pairs" .format(y_ticker), "w+") as f:
+    with open("./models/{}/linear/pairs" .format(y_ticker), "w+") as f:
         for i in range(len(x_tickers)):
             f.write(x_tickers[i])
             if i != len(x_tickers) - 1:
