@@ -16,9 +16,8 @@ pair_data = []
 
 for i in range(0, len(y["dates"]) - 1):
     if (y["dates"][i] in x["dates"]) and (y["dates"][i+1] in x["dates"]):
-        k0 = x["dates"].index(y["dates"][i])
-        k1 = x["dates"].index(y["dates"][i+1])
-        x_return = (x["adjusted close"][k1] - x["adjusted close"][k0]) / x["adjusted close"][k0]
+        k = x["dates"].index(y["dates"][i])
+        x_return = (x["adjusted close"][k+1] - x["adjusted close"][k]) / x["adjusted close"][k]
         y_return = (y["adjusted close"][i+1] - y["adjusted close"][i]) / y["adjusted close"][i]
         pair_data.append("{} {} " .format(x_return, y_return))
 
