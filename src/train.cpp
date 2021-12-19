@@ -85,7 +85,9 @@ void train() {
                     cmd += correlating_tickers[j] + " ";
                 }
                 cmd += tickers[i];
+                std::cout << "Sampling residual data... ";
                 std::system(cmd.c_str());
+                std::cout << "Done!\n";
 
                 // encode residual data
 
