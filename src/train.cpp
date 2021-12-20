@@ -97,8 +97,7 @@ void train() {
                     y_return.push_back(std::stod(val));
                 }
 
-                std::cout << y_return.size() << std::endl;
-                std::cout << raw_residuals.size() << std::endl;
+                // 
 
                 // initial encoding of residual data (raw residual --> synthesized residual)
 
