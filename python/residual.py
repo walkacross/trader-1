@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys
+import os, sys
 import numpy as np
 import pandas as pd
 from math import log2
@@ -21,6 +21,8 @@ def main():
     df = pd.read_csv("./data/{}.csv" .format(y_ticker))
     y_df = {"dates": np.array(df["dates"]), "adjusted close": np.array(df["adjusted close"])}
 
+    os.system("rm -rf ./temp/residual")
+
     for i in range(y_df["dates"].shape[0] - 25):
         common = True
         for y_date in y_df["dates"][i:i+25]: # 0 ... 24
@@ -38,8 +40,8 @@ def main():
                # normalize (past 25 days: 0 ... 24)
                 x_norm = normalize(x_dfs[j]["adjusted close"][k:k+25])
                 y_norm = normalize(y_df["adjusted close"][i:i+25])
-                x_norm -= x_norm.mean()
-                y_norm -= y_norm.mean()
+                x_norm -= x_norm.mean() # standardize
+                y_norm -= y_norm.mean() # standardize
                 # compute and write residual
                 residual = y_norm - x_norm
                 for val in residual:

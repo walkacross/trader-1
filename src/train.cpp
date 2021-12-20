@@ -33,9 +33,11 @@ void train() {
         if(download(tickers[i])) {
             setup(tickers[i]);
             std::cout << "\n=========================" << tickers[i] << "=========================\n\n";
+
             // find correlating pairs
             std::vector<double> correlation;
             std::vector<std::string> correlating_tickers;
+
             for(unsigned int j = 0; j < tickers.size(); j++) {
                 std::string bar_label = "Computing pair correlation [" + tickers[i] + "-" + tickers[j] + "]";
                 progress_bar(j, tickers.size(), bar_label);
@@ -85,11 +87,14 @@ void train() {
                     cmd += correlating_tickers[j] + " ";
                 }
                 cmd += tickers[i];
-                std::cout << "Sampling residual data... ";
                 std::system(cmd.c_str());
-                std::cout << "Done!\n";
+                std::cout << "Residual data sampled in [./temp/residual]\n";
 
-                // encode residual data
+                // read residual data
+
+                // initial encoding of residual data (raw residual --> synthesized residual)
+
+                // secondary encoding (synthesized residual --> feature map)
 
                 // train neural network (reinforcement)
             }
