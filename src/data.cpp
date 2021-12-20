@@ -8,28 +8,13 @@
 
 #include "../lib/data.hpp"
 
-std::vector<std::string> read_ticker_list(std::string path) {
-    std::vector<std::string> tickers;
-
-    std::ifstream f(path);
-    if(f.is_open()) {
-        std::string line;
-        while(std::getline(f, line)) {
-            tickers.push_back(line);
-        }
-        f.close();
-    }
-
-    return tickers;
-}
-
 bool data_exists(std::string ticker) {
     std::ifstream f("./data/" + ticker + ".csv");
     return f.is_open();
 }
 
 bool download(std::string ticker) {
-    if(!data_exists(ticker)) {
+    if (!data_exists(ticker)) {
         std::string cmd = "./python/download.py " + ticker;
         std::system(cmd.c_str());
         std::this_thread::sleep_for(std::chrono::seconds(10));
@@ -37,28 +22,47 @@ bool download(std::string ticker) {
     return data_exists(ticker);
 }
 
-std::vector<std::vector<double>> read_pair(std::string path) {
-    std::vector<std::vector<double>> pair_data;
+std::vector<std::string> read_lines(std::string path) {
+    std::vector<std::string> lines;
+
+    std::ifstream f(path);
+    if(f.is_open()) {
+        std::string line;
+        while(std::getline(f, line)) {
+            if (line.compare("\n") != 0) {
+                lines.push_back(line);
+            }
+        }
+        f.close();
+    }
+
+    return lines;
+}
+
+std::vector<std::vector<double>> load_data(std::string path) {
+    std::vector<std::vector<double>> data;
 
     std::ifstream f(path);
     if(f.is_open()) {
         std::string line, val;
         while(std::getline(f, line)) {
-            std::vector<double> pair;
-            for(unsigned int i = 0; i < line.length(); i++) {
-                if(line[i] != ' ') val += line[i];
-                else {
-                    pair.push_back(std::stod(val));
-                    val = "";
+            if (line.compare("\n") != 0) {
+                std::vector<double> x;
+                for (unsigned int i = 0; i < line.length(); i++) {
+                    if (line[i] != ' ') val += line[i];
+                    else {
+                        x.push_back(std::stod(val));
+                        val = "";
+                    }
                 }
+                data.push_back(x);
+                x.clear();
             }
-            pair_data.push_back(pair);
-            pair.clear();
         }
         f.close();
     }
 
-    return pair_data;
+    return data;
 }
 
 void sort_correlating_pairs(std::vector<std::string> &tickers, std::vector<double> &correlation) {

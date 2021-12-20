@@ -27,7 +27,7 @@ void setup(std::string model) {
 }
 
 void train() {
-    std::vector<std::string> tickers = read_ticker_list("./data/tickers.csv");
+    std::vector<std::string> tickers = read_lines("./data/tickers.csv");
     // initial training module
     for(unsigned int i = 0; i < 1; i++) { // tickers.size()
         if(download(tickers[i])) {
@@ -46,7 +46,7 @@ void train() {
                     std::string cmd = "./python/pair.py " + tickers[j] + " " + tickers[i]; // x, y
                     std::system(cmd.c_str());
                     // compute pair correlation
-                    std::vector<std::vector<double>> pair = read_pair("./temp/pair");
+                    std::vector<std::vector<double>> pair = load_data("./temp/pair");
                     if(pair.size() != 1) {
                         std::vector<double> x, y;
                         for(unsigned int i = 0; i < pair.size(); i++ ) {
@@ -91,6 +91,14 @@ void train() {
                 std::cout << "Residual data sampled in [./temp/residual]\n";
                 
                 // read residual data
+                std::vector<std::vector<double>> raw_residuals = load_data("./temp/residual");
+                std::vector<double> y_return;
+                for (std::string val: read_lines("./temp/y_out")) {
+                    y_return.push_back(std::stod(val));
+                }
+
+                std::cout << y_return.size() << std::endl;
+                std::cout << raw_residuals.size() << std::endl;
 
                 // initial encoding of residual data (raw residual --> synthesized residual)
 

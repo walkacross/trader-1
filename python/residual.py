@@ -22,6 +22,7 @@ def main():
     y_df = {"dates": np.array(df["dates"]), "adjusted close": np.array(df["adjusted close"])}
 
     os.system("rm -rf ./temp/residual")
+    os.system("rm -rf ./temp/y_out")
 
     for i in range(y_df["dates"].shape[0] - 25):
         common = True
@@ -34,10 +35,10 @@ def main():
                 break
 
         if common:
-            out = open("./temp/residual", "a")
+            residual_out = open("./temp/residual", "a")
             for j in range(len(x_dfs)):
                 k = list(x_dfs[j]["dates"]).index(y_df["dates"][i])
-               # normalize (past 25 days: 0 ... 24)
+                # normalize (past 25 days: 0 ... 24)
                 x_norm = normalize(x_dfs[j]["adjusted close"][k:k+25])
                 y_norm = normalize(y_df["adjusted close"][i:i+25])
                 x_norm -= x_norm.mean() # standardize
@@ -45,11 +46,12 @@ def main():
                 # compute and write residual
                 residual = y_norm - x_norm
                 for val in residual:
-                    out.write(str(val) + " ")
-                out.write("\n")
+                    residual_out.write(str(val) + " ")
+                residual_out.write("\n")
             # compute label (1-day return of y)
+            y_out = open("./temp/y_out", "a")
             y_return = (y_df["adjusted close"][i+25] - y_df["adjusted close"][i+24]) / y_df["adjusted close"][i+24]
-            out.write(str(y_return) + "\n/\n")
+            y_out.write(str(y_return) + "\n")
 
     # save list
     with open("./models/{}/linear/pairs" .format(y_ticker), "w+") as f:

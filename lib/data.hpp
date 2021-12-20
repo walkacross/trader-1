@@ -5,13 +5,13 @@
 #include <vector>
 #include <string>
 
-std::vector<std::string> read_ticker_list(std::string path);
-
 bool data_exists(std::string ticker);
 
 bool download(std::string ticker);
 
-std::vector<std::vector<double>> read_pair(std::string path);
+std::vector<std::string> read_lines(std::string path);
+
+std::vector<std::vector<double>> load_data(std::string path);
 
 void sort_correlating_pairs(std::vector<std::string> &tickers, std::vector<double> &correlation);
 
