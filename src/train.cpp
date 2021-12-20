@@ -73,7 +73,7 @@ void train() {
                 // sort correlating pairs (max ... min)
                 sort_correlating_pairs(correlating_tickers, correlation);
 
-                std::cout << "\n\nPairs correlated with " << tickers[i] << std::endl;
+                std::cout << "\nPairs correlated with " << tickers[i] << std::endl;
                 for(unsigned int j = 0; j < correlating_tickers.size(); j++) {
                     if(j < 10) std::cout << "** ";
                     else std::cout << "   ";
@@ -89,7 +89,7 @@ void train() {
                 cmd += tickers[i];
                 std::system(cmd.c_str());
                 std::cout << "Residual data sampled in [./temp/residual]\n";
-
+                
                 // read residual data
 
                 // initial encoding of residual data (raw residual --> synthesized residual)
