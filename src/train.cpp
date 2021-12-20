@@ -88,20 +88,27 @@ void train() {
                 }
                 cmd += tickers[i];
                 std::system(cmd.c_str());
-                std::cout << "Residual data sampled in [./temp/residual]\n";
+                std::cout << "Residual data sampled in [./temp/residual] and [./temp/y_out]\n";
                 
                 // read residual data
-                std::vector<std::vector<double>> raw_residuals = load_data("./temp/residual");
+                std::vector<std::vector<double>> map;
+                std::vector<std::vector<std::vector<double>>> residual_map;
+                for (std::vector<double> residual: load_data("./temp/residual")) {
+                    map.push_back(residual);
+                    if (map.size() == 10) {
+                        residual_map.push_back(map);
+                        map.clear();
+                    }
+                }
+
                 std::vector<double> y_return;
-                for (std::string val: read_lines("./temp/y_out")) {
+                for (std::string val : read_lines("./temp/y_out")) {
                     y_return.push_back(std::stod(val));
                 }
 
-                // 
+                // initial encoding of residual data (raw residual map --> synthesized residual)
 
-                // initial encoding of residual data (raw residual --> synthesized residual)
-
-                // secondary encoding (synthesized residual --> feature map)
+                // secondary encoding (synthesized residual --> multi-time scaled feature map)
 
                 // train neural network (reinforcement)
             }
