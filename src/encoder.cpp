@@ -7,20 +7,18 @@
 #include <tuple>
 #include "../lib/encoder.hpp"
 
-void Encoder::add_layer(std::vector<unsigned int> conv_shape, unsigned int stride, std::vector<unsigned int> pool_shape, bool pad) {
-    layer.push_back(ConvPool2D(conv_shape, stride, pool_shape, pad));
+void Encoder::add_layer(std::vector<unsigned int> conv_shape, unsigned int stride, std::vector<unsigned int> pool_shape) {
+    layer.push_back(ConvPool2D(conv_shape, stride, pool_shape));
 }
 
 std::vector<std::vector<double>> Encoder::encode(std::vector<std::vector<double>> &data) {
     std::vector<std::vector<double>> *x;
-    std::vector<std::vector<double>> pad, convolved, pooled;
+    std::vector<std::vector<double>> convolved, pooled;
     std::vector<std::vector<double>> encoded;
 
     x = &data;
 
     for(unsigned int l = 0; l < layer.size(); l++) {
-        // padding
-
         // convolution
         std::vector<std::vector<double>> *kernel = layer[l].kernel_mat();
         for(unsigned int r = 0; r <= (*x).size() - layer[l].conv_shape()[0]; r += layer[l].conv_stride()) {
@@ -54,8 +52,12 @@ std::vector<std::vector<double>> Encoder::encode(std::vector<std::vector<double>
         }
 
         x = &pooled;
-
+        convolved.clear();
     }
+
+    encoded = (*x);
+    (*x).clear();
+    data.clear();
 
     return encoded;
 }

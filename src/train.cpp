@@ -106,9 +106,7 @@ void train() {
                     y_return.push_back(std::stod(val));
                 }
 
-                // initial encoding of residual data (raw residual map --> synthesized residual)
-
-                // secondary encoding (synthesized residual --> multi-time scaled feature map)
+                // encoding residual maps into synthesized residual vector
 
                 // train neural network (reinforcement)
             }
