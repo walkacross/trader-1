@@ -72,7 +72,7 @@ private:
 public:
     Encoder(std::string model_name): path("./models/" + model_name + "/encoder") {}
     void add_layer(std::vector<unsigned int> conv_shape, unsigned int stride, std::vector<unsigned int> pool_shape, bool pad);
-    std::vector<double> encode(std::vector<std::vector<double>> &data);
+    std::vector<std::vector<double>> encode(std::vector<std::vector<double>> &data);
 //    void save();
 //    void load();
 };
