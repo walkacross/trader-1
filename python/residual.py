@@ -24,9 +24,9 @@ def main():
     os.system("rm -rf ./temp/residual")
     os.system("rm -rf ./temp/y_out")
 
-    for i in range(y_df["dates"].shape[0] - 25):
+    for i in range(y_df["dates"].shape[0] - 20):
         common = True
-        for y_date in y_df["dates"][i:i+25]: # 0 ... 24
+        for y_date in y_df["dates"][i:i+20]: # 0 ... 19
             for j in range(len(x_dfs)):
                 common = y_date in x_dfs[j]["dates"]
                 if not common:
@@ -38,19 +38,21 @@ def main():
             residual_out = open("./temp/residual", "a")
             for j in range(len(x_dfs)):
                 k = list(x_dfs[j]["dates"]).index(y_df["dates"][i])
-                # normalize (past 25 days: 0 ... 24)
-                x_norm = normalize(x_dfs[j]["adjusted close"][k:k+25])
-                y_norm = normalize(y_df["adjusted close"][i:i+25])
+                # normalize (past 20 days: 0 ... 19)
+                x_norm = normalize(x_dfs[j]["adjusted close"][k:k+20])
+                y_norm = normalize(y_df["adjusted close"][i:i+20])
                 x_norm -= x_norm.mean() # standardize
                 y_norm -= y_norm.mean() # standardize
-                # compute and write residual
+                # compute residual
                 residual = y_norm - x_norm
+                # z-score normalization
+                residual = (residual - residual.mean()) / np.std(residual)
                 for val in residual:
                     residual_out.write(str(val) + " ")
                 residual_out.write("\n")
             # compute label (1-day return of y)
             y_out = open("./temp/y_out", "a")
-            y_return = (y_df["adjusted close"][i+25] - y_df["adjusted close"][i+24]) / y_df["adjusted close"][i+24]
+            y_return = (y_df["adjusted close"][i+20] - y_df["adjusted close"][i+19]) / y_df["adjusted close"][i+19]
             y_out.write(str(y_return) + "\n")
 
     # save list

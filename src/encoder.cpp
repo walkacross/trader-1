@@ -14,12 +14,12 @@ void Encoder::add_layer(std::vector<unsigned int> conv_shape, unsigned int strid
 std::vector<std::vector<double>> Encoder::encode(std::vector<std::vector<double>> &data) {
     std::vector<std::vector<double>> *x;
     std::vector<std::vector<double>> convolved, pooled;
-    std::vector<std::vector<double>> encoded;
 
     x = &data;
 
     for(unsigned int l = 0; l < layer.size(); l++) {
         // convolution
+        convolved.clear();
         std::vector<std::vector<double>> *kernel = layer[l].kernel_mat();
         for(unsigned int r = 0; r <= (*x).size() - layer[l].conv_shape()[0]; r += layer[l].conv_stride()) {
             std::vector<double> conv_row;
@@ -36,9 +36,11 @@ std::vector<std::vector<double>> Encoder::encode(std::vector<std::vector<double>
             conv_row.clear();
         }
 
-        for(unsigned int r = 0; r < convolved.size() - layer[l].pool_shape()[0]; r += layer[l].pool_shape()[0]) {
+        // max pooling
+        pooled.clear();
+        for(unsigned int r = 0; r <= convolved.size() - layer[l].pool_shape()[0]; r += layer[l].pool_shape()[0]) {
             std::vector<double> pool_row;
-            for(unsigned int c = 0; c < convolved[r].size() - layer[l].pool_shape()[1]; c += layer[l].pool_shape()[1]) {
+            for(unsigned int c = 0; c <= convolved[r].size() - layer[l].pool_shape()[1]; c += layer[l].pool_shape()[1]) {
                 double max = 0.00;
                 for(unsigned int i = r; i < r + layer[l].pool_shape()[0]; i++) {
                     for(unsigned int j = c; j < c + layer[l].pool_shape()[1]; j++) {
@@ -52,88 +54,12 @@ std::vector<std::vector<double>> Encoder::encode(std::vector<std::vector<double>
         }
 
         x = &pooled;
-        convolved.clear();
     }
 
-    encoded = (*x);
-    (*x).clear();
-    data.clear();
+    data.clear(); // forget initial data
 
-    return encoded;
+    return pooled;
 }
-
-/*
-    for(unsigned int d = 0; d < dataset.size(); d++) {
-        input = &dataset[d]; // initial data
-        for(unsigned int l = 0; l < layer.size(); l++) {
-            std::tuple<unsigned int, unsigned int, bool, std::string, unsigned int> *parameters; parameters = layer[l].get_parameters();
-            // padding
-            if(get<PADDING>(*parameters)) {
-                for(unsigned int i = 0; i < (*input).size() + 2; i++) {
-                    pad.push_back(std::vector<double>((*input).size() + 2, 0.00)); 
-                }
-                for(unsigned int i = 1; i < pad.size() - 1; i++) {
-                    for(unsigned int j = 1; j < pad[i].size() - 1; j++) {
-                        pad[i][j] = (*input)[i-1][j-1];
-                    }
-                }
-                input = &pad;
-            }
-            // convolution
-            std::vector<std::vector<double>> *kernel; kernel = layer[l].get_kernel();
-            unsigned int conv_size = get<CONV_SIZE>(*parameters); 
-            unsigned int stride = get<STRIDE>(*parameters);
-            for(unsigned int r = 0; r <= (*input).size() - conv_size; r += stride) {
-                std::vector<double> row;
-                for(unsigned int c = 0; c <= (*input)[r].size() - conv_size; c += stride) {
-                    float dot = 0.00;
-                    for(unsigned int i = r; i < r + conv_size; i++) {
-                        for(unsigned int j = c; j < c + conv_size; j++) {
-                            dot += (*input)[i][j] * (*kernel)[i-r][j-c];
-                        }
-                    }
-                    row.push_back(dot < 0.00 ? 0.00 : dot); // ReLU
-                }
-                convolved.push_back(row);
-                row.clear();
-            }
-            // pooling (max or avg)
-            pad.clear(); pooled.clear();
-            std::string pool_type = get<POOL_TYPE>(*parameters);
-            unsigned int pool_size = get<POOL_SIZE>(*parameters);
-            for(unsigned int r = 0; r <= convolved.size() - pool_size; r += pool_size) {
-                std::vector<double> row;
-                for(unsigned int c = 0; c <= convolved[r].size() - pool_size; c += pool_size) {
-                    float value = 0.00;
-                    for(unsigned int i = r; i < r + pool_size; i++) {
-                        for(unsigned int j = c; j < c + pool_size; j++) {
-                            if(pool_type == "max") value < convolved[i][j] ? value = convolved[i][j] : value = value;
-                            else if(pool_type == "avg") value += convolved[i][j];
-                            else {}
-                        }
-                    }
-                    if(pool_type == "avg") value /= pool_size * pool_size;
-                    row.push_back(value);
-                }
-                pooled.push_back(row);
-                row.clear();
-            }
-            convolved.clear();
-            input = &pooled;
-        }
-        // flatten encoded feature map of input
-        std::vector<double> flatten;
-        for(unsigned int i = 0; i < (*input).size(); i++) {
-            for(unsigned int j = 0; j < (*input)[i].size(); j++) {
-                flatten.push_back((*input)[i][j]);
-            }
-        }
-        encoded.push_back(flatten);
-        pooled.clear(); flatten.clear();
-    }
-
-    dataset.clear();
-    return encoded;*/
 
 /*
 void Encoder::save() {

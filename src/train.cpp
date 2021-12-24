@@ -9,11 +9,14 @@
 #include "../lib/bar.hpp"
 #include "../lib/data.hpp"
 #include "../lib/linear.hpp"
+#include "../lib/encoder.hpp"
+#include "../lib/dnn.hpp"
 
 void setup(std::string model) {
     std::vector<std::string> required = {
         "./models/" + model + "/",
         "./models/" + model + "/linear",
+        "./models/" + model + "/encoder",
         "./models/" + model + "/dnn"
     };
 
@@ -106,9 +109,21 @@ void train() {
                     y_return.push_back(std::stod(val));
                 }
 
-                // encoding residual maps into synthesized residual vector
+                // encode residual maps into synthesized residual vector
+                Encoder encoder(tickers[i]);
+                encoder.add_layer({10, 3}, 1, {1, 2});
+
+                std::vector<std::vector<double>> synthesized_residual;
+                for(unsigned int k = 0; k < residual_map.size(); k++) {
+                    progress_bar(k, residual_map.size(), "Encoding synthesized residual vector...");
+                    synthesized_residual.push_back(encoder.encode(residual_map[k])[0]);
+                }
+                residual_map.clear();
 
                 // train neural network (reinforcement)
+
+
+
             }
             else {
                 std::cout << "Not enough correlating pairs found. Model rejected.\n";
