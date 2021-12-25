@@ -3,11 +3,14 @@
 import os, sys
 import numpy as np
 import pandas as pd
-from math import log2
+from math import log2, exp
 
 def normalize(mat):
     normalized = np.array([100 * log2(val) for val in mat])
     return normalized
+
+def sigmoid(x):
+    return 1 / (1 + exp(-x))
 
 def main():
     x_tickers = [sys.argv[i] for i in range(1, len(sys.argv) - 1)]
@@ -50,10 +53,10 @@ def main():
                 for val in residual:
                     residual_out.write(str(val) + " ")
                 residual_out.write("\n")
-            # compute label (1-day return of y)
+            # compute label (buy-sell signal based on 1-day return of y)
             y_out = open("./temp/y_out", "a")
-            y_return = (y_df["adjusted close"][i+20] - y_df["adjusted close"][i+19]) / y_df["adjusted close"][i+19]
-            y_out.write(str(y_return) + "\n")
+            signal = sigmoid((y_df["adjusted close"][i+20] - y_df["adjusted close"][i+19]) * 100 / y_df["adjusted close"][i+19])
+            y_out.write(str(signal) + "\n")
 
     # save list
     with open("./models/{}/linear/pairs" .format(y_ticker), "w+") as f:

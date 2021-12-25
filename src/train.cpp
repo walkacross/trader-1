@@ -96,7 +96,7 @@ void train() {
                 // read residual data
                 std::vector<std::vector<double>> map;
                 std::vector<std::vector<std::vector<double>>> residual_map;
-                for (std::vector<double> residual: load_data("./temp/residual")) {
+                for(std::vector<double> residual: load_data("./temp/residual")) {
                     map.push_back(residual);
                     if (map.size() == 10) {
                         residual_map.push_back(map);
@@ -104,9 +104,9 @@ void train() {
                     }
                 }
 
-                std::vector<double> y_return;
-                for (std::string val : read_lines("./temp/y_out")) {
-                    y_return.push_back(std::stod(val));
+                std::vector<double> y_signal;
+                for(std::string val : read_lines("./temp/y_out")) {
+                    y_signal.push_back(std::stod(val));
                 }
 
                 // encode residual maps into synthesized residual vector
@@ -121,8 +121,7 @@ void train() {
                 residual_map.clear();
 
                 // train neural network (reinforcement)
-
-
+                
 
             }
             else {
