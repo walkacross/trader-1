@@ -17,6 +17,7 @@ void setup(std::string model) {
         "./models/" + model + "/",
         "./models/" + model + "/linear",
         "./models/" + model + "/encoder",
+        "./models/" + model + "/encoder/kernels",
         "./models/" + model + "/dnn"
     };
 

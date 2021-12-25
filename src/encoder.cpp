@@ -61,21 +61,20 @@ std::vector<std::vector<double>> Encoder::encode(std::vector<std::vector<double>
     return pooled;
 }
 
-/*
+
 void Encoder::save() {
     std::ofstream f1(path + "/layers");
     if(f1.is_open()) {
         for(unsigned int l = 0; l < layer.size(); l++) {
             // save parameters of each layer into each line
-            std::tuple<unsigned int, unsigned int, bool, std::string, unsigned int> *parameters; parameters = layer[l].get_parameters();
-            f1 << get<CONV_SIZE>(*parameters) << " ";
-            f1 << get<STRIDE>(*parameters) << " ";
-            f1 << get<PADDING>(*parameters) << " ";
-            f1 << get<POOL_TYPE>(*parameters) << " ";
-            f1 << get<POOL_SIZE>(*parameters) << " ";
+            f1 << layer[l].conv_shape()[0] << " ";
+            f1 << layer[l].conv_shape()[1] << " ";
+            f1 << layer[l].conv_stride() << " ";
+            f1 << layer[l].pool_shape()[0] << " ";
+            f1 << layer[l].pool_shape()[1] << " ";
             if(l != layer.size() - 1) f1 << "\n";
             // save kernel of each layer
-            std::vector<std::vector<double>> *kernel; kernel = layer[l].get_kernel();
+            std::vector<std::vector<double>> *kernel = layer[l].kernel_mat();
             std::ofstream f2(path + "/kernels/kernel" + std::to_string(l));
             if(f2.is_open()) {
                 // save each row of the kernel into each line
@@ -92,7 +91,7 @@ void Encoder::save() {
         f1.close();
     }
 }
-*/
+
 /*
 void Encoder::load() {
     // load encoder parameters
