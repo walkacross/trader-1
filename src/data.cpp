@@ -5,6 +5,7 @@
 #include <fstream>
 #include <chrono>
 #include <thread>
+#include <cmath>
 
 #include "../lib/data.hpp"
 
@@ -17,7 +18,7 @@ bool download(std::string ticker) {
     if (!data_exists(ticker)) {
         std::string cmd = "./python/download.py " + ticker;
         std::system(cmd.c_str());
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        std::this_thread::sleep_for(std::chrono::seconds(10)); // rest for API call limit
     }
     return data_exists(ticker);
 }
@@ -48,7 +49,7 @@ std::vector<std::vector<double>> load_data(std::string path) {
         while(std::getline(f, line)) {
             if (line.compare("\n") != 0) {
                 std::vector<double> x;
-                for (unsigned int i = 0; i < line.length(); i++) {
+                for(unsigned int i = 0; i < line.length(); i++) {
                     if (line[i] != ' ') val += line[i];
                     else {
                         x.push_back(std::stod(val));
@@ -88,8 +89,7 @@ void sort_correlating_pairs(std::vector<std::string> &tickers, std::vector<doubl
     }
 }
 
-
-
-
-
+double sigmoid_inverse(double x) {
+    return -log(1/x - 1);
+}
 

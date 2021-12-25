@@ -15,4 +15,6 @@ std::vector<std::vector<double>> load_data(std::string path);
 
 void sort_correlating_pairs(std::vector<std::string> &tickers, std::vector<double> &correlation);
 
+double sigmoid_inverse(double x);
+
 #endif

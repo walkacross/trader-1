@@ -53,7 +53,7 @@ def main():
                 for val in residual:
                     residual_out.write(str(val) + " ")
                 residual_out.write("\n")
-            # compute label (buy-sell signal based on 1-day return of y)
+            # compute label (buy-sell signal based on sigmoid of y's 1-day return %)
             y_out = open("./temp/y_out", "a")
             signal = sigmoid((y_df["adjusted close"][i+20] - y_df["adjusted close"][i+19]) * 100 / y_df["adjusted close"][i+19])
             y_out.write(str(signal) + "\n")

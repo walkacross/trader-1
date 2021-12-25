@@ -139,7 +139,7 @@ void DeepNet::fit(std::vector<double> &x, std::vector<double> &y, double alpha) 
 }
 
 void DeepNet::save() {
-    std::string checkpoint = "./models/" + name + "/checkpoint";
+    std::string checkpoint = "./models/" + name + "/dnn/checkpoint";
     std::ofstream f(checkpoint);
     if(f.is_open()) {
         for(unsigned int l = 0; l < layers.size(); l++) {
@@ -161,7 +161,7 @@ void DeepNet::save() {
 
 bool DeepNet::load() {
     bool loaded = false;
-    std::string checkpoint = "./models/" + name + "/checkpoint";
+    std::string checkpoint = "./models/" + name + "/dnn/checkpoint";
     std::ifstream f(checkpoint);
     if(f.is_open()) {
         std::string line, val;

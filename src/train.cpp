@@ -21,10 +21,10 @@ void setup(std::string model) {
         "./models/" + model + "/dnn"
     };
 
-    for(unsigned int i = 0; i < required.size(); i++) {
-        std::filesystem::directory_entry entry { required[i] };
+    for(std::string dir: required) {
+        std::filesystem::directory_entry entry { dir };
         if(!entry.exists()) {
-            std::string cmd = "mkdir " + required[i];
+            std::string cmd = "mkdir " + dir;
             std::system(cmd.c_str());
         }
     }
@@ -33,7 +33,7 @@ void setup(std::string model) {
 void train() {
     std::vector<std::string> tickers = read_lines("./data/tickers.csv");
     // initial training module
-    for(unsigned int i = 0; i < 1; i++) { // tickers.size()
+    for(unsigned int i = 8; i < 9; i++) { // tickers.size()
         if(download(tickers[i])) {
             setup(tickers[i]);
             std::cout << "\n=========================" << tickers[i] << "=========================\n\n";
@@ -41,7 +41,6 @@ void train() {
             // find correlating pairs
             std::vector<double> correlation;
             std::vector<std::string> correlating_tickers;
-
             for(unsigned int j = 0; j < tickers.size(); j++) {
                 std::string bar_label = "Computing pair correlation [" + tickers[i] + "-" + tickers[j] + "]";
                 progress_bar(j, tickers.size(), bar_label);
@@ -57,6 +56,7 @@ void train() {
                             x.push_back(pair[i][0]);
                             y.push_back(pair[i][1]);
                         }
+
                         LinearRegression linear;
                         double r = linear.fit(x, y);
                         if(r > 0.50) {
@@ -68,6 +68,10 @@ void train() {
                                 + " " + std::to_string(param[0]) + " " + std::to_string(param[1]);
                             std::system(cmd.c_str());
                         }
+                    }
+                    else {
+                        if((int)pair[0][0] == -999) break; // y ticker does not have enough data
+                        else {}
                     }
                 }
             }
@@ -93,7 +97,7 @@ void train() {
                 cmd += tickers[i];
                 std::system(cmd.c_str());
                 std::cout << "Residual data sampled in [./temp/residual] and [./temp/y_out]\n";
-                
+
                 // read residual data
                 std::vector<std::vector<double>> map;
                 std::vector<std::vector<std::vector<double>>> residual_map;
@@ -104,7 +108,7 @@ void train() {
                         map.clear();
                     }
                 }
-
+                // read buy-sell signal of y (sigmoid of 1-day return %)
                 std::vector<double> y_signal;
                 for(std::string val : read_lines("./temp/y_out")) {
                     y_signal.push_back(std::stod(val));
@@ -113,6 +117,7 @@ void train() {
                 // encode residual maps into synthesized residual vector
                 Encoder encoder(tickers[i]);
                 encoder.add_layer({10, 3}, 1, {1, 2});
+                encoder.load();
 
                 std::vector<std::vector<double>> synthesized_residual;
                 for(unsigned int k = 0; k < residual_map.size(); k++) {
@@ -120,6 +125,7 @@ void train() {
                     synthesized_residual.push_back(encoder.encode(residual_map[k])[0]);
                 }
                 residual_map.clear();
+                encoder.save();
 
                 // train neural network (reinforcement)
                 
@@ -128,7 +134,6 @@ void train() {
             else {
                 std::cout << "Not enough correlating pairs found. Model rejected.\n";
             }
-
         }
     }
 }

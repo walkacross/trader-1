@@ -61,7 +61,6 @@ std::vector<std::vector<double>> Encoder::encode(std::vector<std::vector<double>
     return pooled;
 }
 
-
 void Encoder::save() {
     std::ofstream f1(path + "/layers");
     if(f1.is_open()) {
@@ -137,6 +136,6 @@ void Encoder::load() {
         f1.close();
     }
     // display encoder parameters
-    
+
 }
 
