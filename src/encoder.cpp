@@ -92,7 +92,6 @@ void Encoder::save() {
     }
 }
 
-/*
 void Encoder::load() {
     // load encoder parameters
     std::string line, val;
@@ -100,19 +99,16 @@ void Encoder::load() {
     f1.open(path + "/layers");
     if(f1.good()) {
         layer.clear();
-        bool padding; std::string pool_type; unsigned int conv_size, pool_size, stride;
         while(getline(f1, line)) {
             // read parameter values of each layer
-            unsigned int val_count = 0;
+            unsigned int stride = 0;
+            std::vector<unsigned int> conv_shape, pool_shape;
             for(unsigned int i = 0; i < line.length(); i++) {
                 if(line[i] != ' ') val += line[i];
                 else {
-                    if(val_count == CONV_SIZE) conv_size = std::stoul(val);
-                    else if(val_count == STRIDE) stride = std::stoul(val);
-                    else if(val_count == PADDING) padding = std::stoi(val);
-                    else if(val_count == POOL_TYPE) pool_type = val;
-                    else pool_size = std::stoul(val);
-                    val_count++;
+                    if(conv_shape.size() < 2) conv_shape.push_back(std::stod(val));
+                    else if(conv_shape.size() == 2 && stride == 0) stride = std::stoi(val);
+                    else pool_shape.push_back(std::stod(val));
                     val = "";
                 }
             }
@@ -135,31 +131,12 @@ void Encoder::load() {
                 f2.close();
             }
             // construct layer
-            layer.push_back(ConvPool2D(conv_size, stride, padding, pool_type, pool_size, kernel));
+            layer.push_back(ConvPool2D(conv_shape, stride, pool_shape));
+            layer[layer.size() - 1].init_kernel(kernel);
         }
         f1.close();
     }
     // display encoder parameters
-    std::cout << "Encoder Parameters" << std::endl;
-    std::cout << "------------------------------------------------------------------" << std::endl;
-    std::cout << "     conv_size  stride  padding  pool_type  pool_size  kernel" << std::endl;
-    std::cout << "------------------------------------------------------------------" << std::endl;
-    for(unsigned int l = 0; l < layer.size(); l++) {
-        std::tuple<unsigned int, unsigned int, bool, std::string, unsigned int> *parameters; parameters = layer[l].get_parameters();
-        std::cout << "#" << l << ":      " << get<CONV_SIZE>(*parameters) << "        " << get<STRIDE>(*parameters) << "        " << get<PADDING>(*parameters) << "        " << get<POOL_TYPE>(*parameters) << "         " << get<POOL_SIZE>(*parameters) << "     ";
-
-        std::vector<std::vector<double>> *kernel; kernel = layer[l].get_kernel();
-        for(unsigned int i = 0; i < (*kernel).size(); i++) {
-            std::cout << "[";
-            for(unsigned int j = 0; j < (*kernel)[i].size(); j++) {
-                std::cout << (*kernel)[i][j];
-                if(j != (*kernel)[i].size() - 1) std::cout << " ";
-            }
-            std::cout << "]";
-            if(i != (*kernel).size() - 1) std::cout << ", ";
-        }
-        std::cout << "\n";
-    }
-
+    
 }
-*/
+

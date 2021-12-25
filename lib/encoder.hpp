@@ -41,19 +41,11 @@ public:
             row.clear();
         }
     }
-    // load layer from exisiting source
-    ConvPool2D(std::vector<std::vector<double>> &kernel_source, unsigned int _stride, std::vector<unsigned int> pool_shape) {
-        // initialize parameters
-        conv_rows = kernel_source.size();
-        conv_cols = kernel_source[0].size();
-        stride = _stride;
-        pool_rows = pool_shape[0];
-        pool_cols = pool_shape[1];
-        // initialize kernel
-        kernel = kernel_source;
-        kernel_source.clear();
-    }
 
+    void init_kernel(std::vector<std::vector<double>> &mat) {
+        kernel = mat;
+        mat.clear();
+    }
     std::vector<std::vector<double>> *kernel_mat() { return &kernel; }
     std::vector<unsigned int> conv_shape() { return std::vector<unsigned int>({conv_rows, conv_cols}); }
     std::vector<unsigned int> pool_shape() { return std::vector<unsigned int>({pool_rows, pool_cols}); }
@@ -67,10 +59,11 @@ private:
     std::vector<ConvPool2D> layer;
 public:
     Encoder(std::string model_name): path("./models/" + model_name + "/encoder") {}
+
     void add_layer(std::vector<unsigned int> conv_shape, unsigned int stride, std::vector<unsigned int> pool_shape);
     std::vector<std::vector<double>> encode(std::vector<std::vector<double>> &data);
     void save();
-//    void load();
+    void load();
 };
 
 #endif
