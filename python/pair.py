@@ -29,6 +29,6 @@ if int(y["dates"][0][:4]) <= 2000:
             if i != len(pair_data) - 1:
                 out.write("\n")
     else:
-        out.write("999.000 999.000 ")
+        out.write("999.000 999.000 ") # not enough dates from y match with x
 else:
-    out.write("-999.000 -999.000 ")
+    out.write("-999.000 -999.000 ") # not enough data from y

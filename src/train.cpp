@@ -71,7 +71,7 @@ void train() {
                     }
                     else {
                         if((int)pair[0][0] == -999) break; // y ticker does not have enough data
-                        else {}
+                        else {} // y ticker and x ticker don't have enough matching dates
                     }
                 }
             }
@@ -124,7 +124,6 @@ void train() {
                 residual_map.clear();
                 encoder.save();
 /*
-                // build model
                 double performance = 1.00;
                 DeepNet model(tickers[i], {{9,9},{9,9},{9,1}});
                 model.load();
@@ -133,7 +132,7 @@ void train() {
                     double yhat = model.predict(synthesized_residual[j])[0];
                     if(yhat > 0.50) { // buy
                         performance *= sigmoid_inverse(y_signal[j][0]); // 1-day return % of y (reward/punishment)
-                    } else {}
+                    }
                     // train model based on a reinforcement learning schedule
                     if(performance > 1.00) {}
                     else {
@@ -148,17 +147,18 @@ void train() {
                                 model.fit(synthesized_residual[k], y_signal[k], alpha);
                             }
                             // compute accuracy of buy-sell signal
+                            unsigned int correct = 0;
                             for(unsigned int k = 0; k < j; k++) {
                                 double yhat = model.predict(synthesized_residual[k])[0];
                                 if((yhat > 0.50 && y_signal[k][0] > 0.50) || (yhat < 0.50 && y_signal[k][0] < 0.50)) {
-                                    acc_t1 += 1.00;
-                                } else {}
+                                    correct++;
+                                }
                             }
-                            acc_t1 /= j;
+                            acc_t1 = correct / j;
                             // decay learning rate if training accuracy improves
                             if(acc_t1 > acc_t0) {
                                 alpha *= (1 - decay);
-                            } else {}
+                            }
 
                             acc_t0 = acc_t1;
                             epoch++;
