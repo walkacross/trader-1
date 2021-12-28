@@ -83,14 +83,12 @@ std::vector<double> DeepNet::predict(std::vector<double> &x) {
     std::vector<double> yhat;
     // fully connected forward propagation
     for(unsigned int l = 0; l < layers.size(); l++) {
-        std::vector<Node> *nodes;
-        nodes = layers[l].get_nodes();
-        for(unsigned int n = 0; n < (*nodes).size(); n++) {
+        std::vector<Node> *nodes = layers[l].get_nodes();
+        for(unsigned int n = 0; n < layers[l].out_features(); n++) {
             double dot = 0.00;
-            std::vector<double> *weights;
-            weights = (*nodes)[n].weight_vector();
+            std::vector<double> *weights = (*nodes)[n].weight_vector();
             (*nodes)[n].init();
-            for(unsigned int i = 0; i < (*weights).size(); i++) {
+            for(unsigned int i = 0; i < layers[l].in_features(); i++) {
                 if(l == 0) {
                     dot += x[i] * (*weights)[i];
                 }
@@ -110,11 +108,9 @@ void DeepNet::fit(std::vector<double> &x, std::vector<double> &y, double alpha) 
     std::vector<double> yhat = predict(x);
     // stochastic gradient descent
     for(int l = layers.size() - 1; l >= 0; l--) {
-        std::vector<Node> *nodes;
-        nodes = layers[l].get_nodes();
-        for(unsigned int n = 0; n < (*nodes).size(); n++) {
-            std::vector<double> *weights;
-            weights = (*nodes)[n].weight_vector();
+        std::vector<Node> *nodes = layers[l].get_nodes();
+        for(unsigned int n = 0; n < layers[l].out_features(); n++) {
+            std::vector<double> *weights = (*nodes)[n].weight_vector();
             // compute gradient
             double delta, gradient = 0.00;
             if(l == layers.size() - 1) {
@@ -123,7 +119,7 @@ void DeepNet::fit(std::vector<double> &x, std::vector<double> &y, double alpha) 
             else {
                 delta = (*nodes)[n].error_summation() * relu_prime((*nodes)[n].summation());
             }
-            for(unsigned int i = 0; i < (*weights).size(); i++) {
+            for(unsigned int i = 0; i < layers[l].in_features(); i++) {
                 if(l != 0) {
                     gradient = delta * (*layers[l-1].get_nodes())[i].activation();
                     (*layers[l-1].get_nodes())[i].add_error_summation(delta * (*weights)[i]);
@@ -144,12 +140,10 @@ void DeepNet::save() {
     if(f.is_open()) {
         for(unsigned int l = 0; l < layers.size(); l++) {
             f << layers[l].in_features() << " " << layers[l].out_features() << " \n";
-            std::vector<Node> *nodes;
-            nodes = layers[l].get_nodes();
-            for(unsigned int n = 0; n < (*nodes).size(); n++) {
-                std::vector<double> *weights;
-                weights = (*nodes)[n].weight_vector();
-                for(unsigned int i = 0; i < (*weights).size(); i++) f << (*weights)[i] << " ";
+            std::vector<Node> *nodes = layers[l].get_nodes();
+            for(unsigned int n = 0; n < layers[l].out_features(); n++) {
+                std::vector<double> *weights = (*nodes)[n].weight_vector();
+                for(unsigned int i = 0; i < layers[l].in_features(); i++) f << (*weights)[i] << " ";
                 f << "\n";
             }
             f << "/ ";
@@ -168,6 +162,8 @@ bool DeepNet::load() {
         std::vector<unsigned int> shape;
         bool have_shape = false;
         unsigned int n, k = 0;
+
+        layers.clear();
         while(std::getline(f, line)) {
             for(unsigned int i = 0; i < line.length(); i++) {
                 if(line[i] != ' ') val += line[i];
@@ -186,8 +182,8 @@ bool DeepNet::load() {
                             } else {}
                         }
                         else {
-                            std::vector<Node> *nodes; nodes = layers[layers.size() - 1].get_nodes();
-                            std::vector<double> *weights; weights = (*nodes)[n].weight_vector();
+                            std::vector<Node> *nodes = layers[layers.size() - 1].get_nodes();
+                            std::vector<double> *weights = (*nodes)[n].weight_vector();
                             (*weights)[k] = std::stod(val);
                             k++;
 

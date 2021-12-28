@@ -109,10 +109,7 @@ void train() {
                     }
                 }
                 // read buy-sell signal of y (sigmoid of 1-day return %)
-                std::vector<double> y_signal;
-                for(std::string val : read_lines("./temp/y_out")) {
-                    y_signal.push_back(std::stod(val));
-                }
+                std::vector<std::vector<double>> y_signal = load_data("./temp/y_out");
 
                 // encode residual maps into synthesized residual vector
                 Encoder encoder(tickers[i]);
@@ -126,10 +123,49 @@ void train() {
                 }
                 residual_map.clear();
                 encoder.save();
+/*
+                // build model
+                double performance = 1.00;
+                DeepNet model(tickers[i], {{9,9},{9,9},{9,1}});
+                model.load();
 
-                // train neural network (reinforcement)
-                
+                for(unsigned int j = 0; j < synthesized_residual.size(); j++) {
+                    double yhat = model.predict(synthesized_residual[j])[0];
+                    if(yhat > 0.50) { // buy
+                        performance *= sigmoid_inverse(y_signal[j][0]); // 1-day return % of y (reward/punishment)
+                    } else {}
+                    // train model based on a reinforcement learning schedule
+                    if(performance > 1.00) {}
+                    else {
+                        unsigned int epoch = 1;
+                        double alpha = 0.01;
+                        double decay = 0.01;
+                        double acc_t0 = 0.00; // previous training epoch accuracy
+                        double acc_t1 = 0.00; // current training epoch accuracy
+                        while(acc_t1 < 0.70) {
+                            // train
+                            for(unsigned int k = 0; k < j; k++) {
+                                model.fit(synthesized_residual[k], y_signal[k], alpha);
+                            }
+                            // compute accuracy of buy-sell signal
+                            for(unsigned int k = 0; k < j; k++) {
+                                double yhat = model.predict(synthesized_residual[k])[0];
+                                if((yhat > 0.50 && y_signal[k][0] > 0.50) || (yhat < 0.50 && y_signal[k][0] < 0.50)) {
+                                    acc_t1 += 1.00;
+                                } else {}
+                            }
+                            acc_t1 /= j;
+                            // decay learning rate if training accuracy improves
+                            if(acc_t1 > acc_t0) {
+                                alpha *= (1 - decay);
+                            } else {}
 
+                            acc_t0 = acc_t1;
+                            epoch++;
+                        }
+                    }
+                }
+*/
             }
             else {
                 std::cout << "Not enough correlating pairs found. Model rejected.\n";

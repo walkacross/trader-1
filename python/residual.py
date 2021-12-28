@@ -56,7 +56,7 @@ def main():
             # compute label (buy-sell signal based on sigmoid of y's 1-day return %)
             y_out = open("./temp/y_out", "a")
             signal = sigmoid((y_df["adjusted close"][i+20] - y_df["adjusted close"][i+19]) * 100 / y_df["adjusted close"][i+19])
-            y_out.write(str(signal) + "\n")
+            y_out.write(str(signal) + " \n")
 
     # save list
     with open("./models/{}/linear/pairs" .format(y_ticker), "w+") as f:
